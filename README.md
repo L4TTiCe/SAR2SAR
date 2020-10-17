@@ -7,9 +7,10 @@ All rights reserved.
 Please note that the training set is only composed of **Sentinel-1** SAR images, thus this testing code is specific to this data.
 
 ## How to use the tool
+Refer the [Wiki](https://github.com/L4TTiCe/SAR2SAR/wiki) for more information.
 
 1. Preprocess your image into '.npy' file. Check '00_Preprocessing.ipynb'.
-2. Place your processed numpy data under the 'data' directory in the source folder
+2. Place your processed numpy array under the 'data' directory in the source folder
 3. Run it through the model. Check '01_Interface.ipynb'.
 4. Check for your denoised image under 'output' folder, on sucessful execution
 
