@@ -1,0 +1,1 @@
+This directory will contain the ENVI files, that need to be preprocessed
