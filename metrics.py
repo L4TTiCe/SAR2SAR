@@ -6,6 +6,7 @@ import os
 import argparse
 import cv2 as cv
 from skimage.metrics import structural_similarity as ssim
+from skimage.metrics import peak_signal_noise_ratio as psnr
 
 parser = argparse.ArgumentParser(description='Script to compute speckle metrics for image pairs')
 parser.add_argument('--noisy-dir', dest='noisy_dir', help='Path to the noisy(with speckles) images directory to be considered')
@@ -51,6 +52,10 @@ def SSIM(img_n, img_f):
     SSIM = ssim(img_f, img_n, data_range=max(img_f.max(), img_n.max()) - min(img_f.min(), img_n.min()))
     print(f'        [*] SMPI @ {SSIM}')
     
+def PSNR(img_n, img_f):
+    PSNR = psnr(img_f, img_n, data_range=max(img_f.max(), img_n.max()) - min(img_f.min(), img_n.min()))
+    print(f'        [*] PSNR @ {psnr}')
+    
 
 if __name__ == '__main__':
     noisy_files = glob((args.noisy_dir+'/*.'+args.ext).format('float32'))
@@ -78,6 +83,7 @@ if __name__ == '__main__':
         ENL(img_f)
         SMPI(img_n, img_f)
         SSIM(img_n, img_f)
+        PSNR(img_n, img_f)
     
     ###########################################################################
     print(f'[*] Script Succeeded')
