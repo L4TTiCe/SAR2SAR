@@ -11,9 +11,9 @@ from skimage.measure import compare_ssim as ssim
 from PIL import Image, UnidentifiedImageError
 
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--img_dir', dest='img_dir', default=os.path.join(os.path.join(os.getcwd(),'test'), 'denoised'), help='Image files that need to be proessed are stored here')
-parser.add_argument('--mask_dir', dest='mask_dir', default=os.path.join(os.getcwd(),'mask_data'), help='Output directory to get masks')
-parser.add_argument('--out_dir', dest='out_dir', default=os.path.join(os.path.join(os.getcwd(),'test'), 'final'), help='Inpainted images are to be dumbed here')
+parser.add_argument('--img_dir', dest='img_dir', default=os.path.join(os.path.join(os.getcwd(),'output'), 'denoised'), help='Image files that need to be proessed are stored here')
+parser.add_argument('--mask_dir', dest='mask_dir', default=os.path.join(os.path.join(os.getcwd(),'output'),'mask_data'), help='Output directory to get masks')
+parser.add_argument('--out_dir', dest='out_dir', default=os.path.join(os.path.join(os.getcwd(),'output'), 'final'), help='Inpainted images are to be dumbed here')
 parser.add_argument('--debug', dest='debug', help='Image-by-Image mode')
 args = parser.parse_args()
 
