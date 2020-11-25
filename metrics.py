@@ -5,6 +5,8 @@ import numpy as np
 import os
 import argparse
 import cv2 as cv
+import ntpath
+import pandas as pd 
 from skimage.metrics import structural_similarity as ssim
 from skimage.metrics import peak_signal_noise_ratio as psnr
 
@@ -26,14 +28,32 @@ def SSI(noisy, filtered):
     
     SSI = (sigma_r * f_dash) / (r_dash * sigma_f)
     print(f'        [*] SSI @ {SSI}')
+    return SSI
+
+def ENL_handler(path):
+    img_f_raster = Image.open(path).convert('L')
+    
+    # Setting the points for cropped image 
+    left = 8000
+    top = 8000
+    right = 10000
+    bottom = 10000
+    
+    f_crop = img_f_raster.crop((left, top, right, bottom)) 
+    
+    save_path = os.path.join(os.path.join(os.path.join(os.path.join(os.getcwd(), 'output'), 'metrics'), 'enl'), ntpath.basename(noisy_files[idx]))
+    f_crop.save(save_path) 
+    
+    return ENL(np.asarray(f_crop))
     
 def ENL(filtered):
     """ Equivalent Number of Looks """
     mu = np.mean(filtered)
-    sigma = np.var(filtered)
+    sigma = np.std(filtered)
 
     ENL = (mu / sigma)**2
     print(f'        [*] ENL @ {ENL}')
+    return ENL
 
 def SMPI(noisy, filtered):
     """ Speckle Suppression and Mean Preservation Index """
@@ -47,17 +67,21 @@ def SMPI(noisy, filtered):
 
     SMPI = Q * (sigma_r / sigma_f)
     print(f'        [*] SMPI @ {SMPI}')
+    return SMPI
     
 def SSIM(img_n, img_f):
     SSIM = ssim(img_f, img_n, data_range=max(img_f.max(), img_n.max()) - min(img_f.min(), img_n.min()))
     print(f'        [*] SMPI @ {SSIM}')
+    return SSIM
     
 def PSNR(img_n, img_f):
     PSNR = psnr(img_f, img_n, data_range=max(img_f.max(), img_n.max()) - min(img_f.min(), img_n.min()))
-    print(f'        [*] PSNR @ {psnr}')
+    print(f'        [*] PSNR @ {PSNR}')
+    return PSNR
     
 
 if __name__ == '__main__':
+    df = pd.DataFrame(columns = ['Name', 'PSNR', 'SSI', 'SMPI', 'ENL']) 
     noisy_files = glob((args.noisy_dir+'/*.'+args.ext).format('float32'))
     denoi_files = glob((args.filtered_dir+'/*.'+args.ext).format('float32'))
     print(f' [] Found {len(noisy_files)} files')
@@ -79,11 +103,16 @@ if __name__ == '__main__':
         
     ###########################################################################
         print(f'      [*] Starting Metrics Computation')
-        SSI(img_n, img_f)
-        ENL(img_f)
-        SMPI(img_n, img_f)
-        SSIM(img_n, img_f)
-        PSNR(img_n, img_f)
+        psnr_v = PSNR(img_n, img_f)
+        ssi_v = SSI(img_n, img_f)
+        smpi_v = SMPI(img_n, img_f)
+        enl_v = ENL_handler(denoi_files[idx])
+#         SSIM(img_n, img_f)
+
+        df = df.append({'Name' : ntpath.basename(noisy_files[idx]), 'PSNR' : psnr_v, 'SSI' : ssi_v, 'SMPI': smpi_v, 'ENL': enl_v},  
+                ignore_index = True) 
     
     ###########################################################################
+    
+    df.to_csv(os.path.join(os.path.join(os.getcwd(), 'output'), 'metrics.csv'), index = False)
     print(f'[*] Script Succeeded')
